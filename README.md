@@ -1,5 +1,5 @@
 Personalized Medicine Project
-Using NK Breast Cancer imaging dataset to determine optimal treatment regime.
+Using NK Breast Cancer imaging dataset to determine optimal treatment regimen.
 Data has 272 patients and 1570 variables.
 
 In order to determine optimal treatment policy, we:
