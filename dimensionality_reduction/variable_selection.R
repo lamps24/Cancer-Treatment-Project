@@ -15,9 +15,6 @@
 
 library(glmnet)
 
-# replace with own path
-original_df = read.csv("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Data/NKI_cleaned.csv")
-
 # function
 variable_select = function(original_df)
 {
@@ -46,16 +43,12 @@ variable_select = function(original_df)
   metadata = original_df[, 3:14]
   
   # add an 8-level treatment factor
-  metadata$treatment = ifelse(metadata$chemo==0 & metadata$hormonal==0 & metadata$amputation==0, 1, 0)
-  metadata$treatment = ifelse(metadata$chemo==0 & metadata$hormonal==0 & metadata$amputation==1, 2, metadata$treatment)
-  metadata$treatment = ifelse(metadata$chemo==0 & metadata$hormonal==1 & metadata$amputation==0, 3, metadata$treatment)
-  metadata$treatment = ifelse(metadata$chemo==0 & metadata$hormonal==1 & metadata$amputation==1, 4, metadata$treatment)
-  metadata$treatment = ifelse(metadata$chemo==1 & metadata$hormonal==0 & metadata$amputation==0, 5, metadata$treatment)
-  metadata$treatment = ifelse(metadata$chemo==1 & metadata$hormonal==0 & metadata$amputation==1, 6, metadata$treatment)
-  metadata$treatment = ifelse(metadata$chemo==1 & metadata$hormonal==1 & metadata$amputation==0, 7, metadata$treatment)
-  metadata$treatment = ifelse(metadata$chemo==1 & metadata$hormonal==1 & metadata$amputation==1, 8, metadata$treatment)
+  metadata$treatment = ifelse(metadata$chemo==0 & metadata$amputation==0, 1, 0)
+  metadata$treatment = ifelse(metadata$chemo==0 & metadata$amputation==1, 2, metadata$treatment)
+  metadata$treatment = ifelse(metadata$chemo==1 & metadata$amputation==0, 3, metadata$treatment)
+  metadata$treatment = ifelse(metadata$chemo==1 & metadata$amputation==1, 4, metadata$treatment)
   metadata$treatment = as.factor(metadata$treatment)
-
+  
   # join metadata with selected vars
   newdata = cbind(metadata, selected_vars)
   
