@@ -5,10 +5,12 @@
 # inputs:
 #   - data = data
 #   - i = treatment policy that's being tested
-#         272x1 vector of 8 levels, turned into:
-#         272x8 matrix of dummies indicating which treatment each patient will receive
+#         272x1 vector of 4 levels,which is then turned into:
+#         272x4 matrix of dummies indicating which treatment each patient will receive
 # outputs:
 #   - value, a scalar
+#   - pi.d, a 272x1 vector
+#   - c.d, a 272x1 vector
 #
 ########################################################################
 
@@ -43,5 +45,5 @@ ipw = function(df, i)
   
   # treatment effect
   value = mean((df$eventdeath * c.d) / pi.d)
-  return(list(value=value))
+  return(list(value=value, pi.d=pi.d, c.d=c.d))
 }
