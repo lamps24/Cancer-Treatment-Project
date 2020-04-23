@@ -11,6 +11,9 @@
 #
 ########################################################################
 
+library("xgboost")
+library("dplyr")
+
 OR_xgb = function(df, i){
   xdat = df
   A = i
