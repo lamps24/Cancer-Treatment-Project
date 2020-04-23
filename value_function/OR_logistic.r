@@ -12,7 +12,6 @@
 ########################################################################
 
 library("dplyr")
-library("xgboost")
 
 OR_log = function(df, i){
   # Assign inputs to different var names
