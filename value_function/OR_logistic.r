@@ -4,8 +4,8 @@
 #
 # inputs:
 #   - data = dataset
-#   - i = treatment policy that's being tested
-#         272x1 vector of 4 levels,which is then turned into:
+#   - eta = values of eta for the policy for chemo and amputation
+#      - currently has length 2, but can be changed depending on how we structure policy
 # outputs:
 #   - deltaOR_log, the resulting value (scalar)
 #
@@ -13,11 +13,29 @@
 
 library("dplyr")
 
-OR_log = function(df, i){
+OR_log = function(df, eta){
   # Assign inputs to different var names
   newdat = df
   newdat = select(newdat, -c(chemo, amputation, hormonal)) # remove the treatment columns
-  A = i
+  N = length(newdat$age)
+  
+  ##########################################################
+  # Convert eta values to policies
+  # Can be modified to accept several values for eta
+  # Right now there is only 2, one for predicting chemo and one for amputation
+  
+  chem = ifelse(newdat$age < eta[1], 1, 0) 
+  amp = ifelse(newdat$timerecurrence < eta[2], 1, 0)
+  
+  policy = rep(0,272)
+  
+  policy = ifelse(chem == 0 & amp == 0, 1, policy)
+  policy = ifelse(chem == 0 & amp == 1, 2, policy)
+  policy = ifelse(chem == 1 & amp == 0, 3, policy)
+  policy = ifelse(chem == 1 & amp == 1, 4, policy)
+  A = policy
+  
+  #########################################################
   
   # Create model for the betas, can be modified in the future.
   mod = glm(eventdeath ~ ., data = newdat, family = "binomial")
