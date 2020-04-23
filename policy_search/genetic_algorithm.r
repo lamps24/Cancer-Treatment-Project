@@ -17,7 +17,7 @@
 
 library(data.table)
 
-gen_alg = function(df, M = 100, u = 0.3, lam = 3, gen = 1){
+gen_alg = function(df, M = 100, u = 0.3, lam = 3, gen = 1, val_fun = OR_log){
   for (k in 1:gen){
     set.seed(5080)
     X = matrix(rnorm(M*2), nrow = M) #right now we only need 2 columns for eta
@@ -46,7 +46,7 @@ gen_alg = function(df, M = 100, u = 0.3, lam = 3, gen = 1){
         else{
           Z[l, ]= X[r,]
         }
-        Vtemp[l] = OR_log(dat, Z[l, ]) # can change which value search function 
+        Vtemp[l] = val_fun(dat, Z[l, ]) # can change which value search function 
         l = l + 1
       }
     }
