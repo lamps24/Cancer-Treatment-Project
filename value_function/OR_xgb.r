@@ -4,19 +4,37 @@
 #
 # inputs:
 #   - data = dataset
-#   - i = treatment policy that's being tested
-#         272x1 vector of 4 levels,which is then turned into:
+#   - eta = values of eta for the policy for chemo and amputation
+#      - currently has length 2, but can be changed depending on how we structure policy
 # outputs:
 #   - deltaOR_log, the resulting value (scalar)
 #
 ########################################################################
 
-library("xgboost")
 library("dplyr")
+library("xgboost")
 
-OR_xgb = function(df, i){
+OR_xgb = function(df, eta){
   xdat = df
-  A = i
+  N = length(xdat$age)
+  
+  ##########################################################
+  # Convert eta values to policies
+  # Can be modified to accept several values for eta
+  # Right now there is only 2, one for predicting chemo and one for amputation
+  
+  chem = ifelse(xdat$age < eta[1], 1, 0) 
+  amp = ifelse(xdat$timerecurrence < eta[2], 1, 0)
+  
+  policy = rep(0,272)
+  
+  policy = ifelse(chem == 0 & amp == 0, 1, policy)
+  policy = ifelse(chem == 0 & amp == 1, 2, policy)
+  policy = ifelse(chem == 1 & amp == 0, 3, policy)
+  policy = ifelse(chem == 1 & amp == 1, 4, policy)
+  A = policy
+  
+  #########################################################
   
   # separating dataset into covariates and outcome (label)
   xdat = select(xdat, -c(chemo, amputation, hormonal))
@@ -39,7 +57,7 @@ OR_xgb = function(df, i){
   
   # create list of parameters, and begin training the model
   param = list(max_depth = 2, eta = 1, verbose = 0, nthread = 2, objective = "binary:logistic", eval_metric = "auc")
-  bst = xgb.train(param, dtrain, nrounds = 100, watchlist)
+  bst = xgb.train(param, dtrain, nrounds = 10, watchlist)
   
   # remove the treatment columns from input data
   df = select(df, -c(chemo, amputation, hormonal))
@@ -78,4 +96,3 @@ OR_xgb = function(df, i){
   return(deltaXGB)
   
 }
-
