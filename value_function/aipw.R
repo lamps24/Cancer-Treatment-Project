@@ -4,15 +4,25 @@
 #
 # inputs:
 #   - data = data
-#   - i = treatment policy that's being tested
-#         272x1 vector of 4 levels
+#   - eta = vector of eta values that will form policy
 # outputs:
 #   - value, a scalar
 #
 ########################################################################
 
-aipw = function(df, i)
+aipw = function(df, eta)
 {
+  
+  # convert eta values to policies - can adjust form of policy
+  chem = ifelse(df$var1 < eta[1], 1, 0) 
+  amp = ifelse(df$timerecurrence < eta[2], 1, 0)
+  policy = rep(0,272)
+  policy = ifelse(chem == 0 & amp == 0, 1, policy)
+  policy = ifelse(chem == 0 & amp == 1, 2, policy)
+  policy = ifelse(chem == 1 & amp == 0, 3, policy)
+  policy = ifelse(chem == 1 & amp == 1, 4, policy)
+  i = policy
+  
   # ipw estimate
   ipw = ipw(df, i)
   ipw.value = ipw$value
