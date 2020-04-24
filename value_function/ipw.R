@@ -4,9 +4,7 @@
 #
 # inputs:
 #   - data = data
-#   - i = treatment policy that's being tested
-#         272x1 vector of 4 levels,which is then turned into:
-#         272x4 matrix of dummies indicating which treatment each patient will receive
+#   - eta = vector of eta values that will form policy
 # outputs:
 #   - value, a scalar
 #   - pi.d, a 272x1 vector
@@ -17,8 +15,18 @@
 library(nnet)
 library(fastDummies)
 
-ipw = function(df, i)
+ipw = function(df, eta)
 {
+  
+  # convert eta values to policies - can adjust form of policy
+  chem = ifelse(df$var1 < eta[1], 1, 0) 
+  amp = ifelse(df$timerecurrence < eta[2], 1, 0)
+  policy = rep(0,272)
+  policy = ifelse(chem == 0 & amp == 0, 1, policy)
+  policy = ifelse(chem == 0 & amp == 1, 2, policy)
+  policy = ifelse(chem == 1 & amp == 0, 3, policy)
+  policy = ifelse(chem == 1 & amp == 1, 4, policy)
+  i = policy
   
   # extract only the variables needed for fitting so we can tell it to use all vars  
   df_for_fit = df[, 8:ncol(df)]
