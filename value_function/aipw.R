@@ -29,8 +29,9 @@ aipw = function(df, eta)
   pi.d = ipw$pi.d
   c.d = ipw$c.d
   
-  # or estimates
-  q.or = glm(eventdeath ~ age + diam, data=df, family=binomial)
+  # or estimates - fitting with all vars selected by LASSO
+  df_for_fit = df[, c(2, 8:ncol(df))]
+  q.or = glm(eventdeath ~ ., data=df_for_fit, family=binomial)
   
   # create new dataframe to be used for generating predictions based on new treatment decision i
   data.policy = df
