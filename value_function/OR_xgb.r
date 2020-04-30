@@ -4,10 +4,9 @@
 #
 # inputs:
 #   - data = dataset
-#   - eta = values of eta for the policy for chemo and amputation
-#      - currently has length 2, but can be changed depending on how we structure policy
 #   - trt = a scalar for which treatment is being used 
 #      - chemo is column 5, and amputation is column 7
+#   - i = policy vector, supplied from genetic algorithm
 # outputs:
 #   - deltaOR_log, the resulting value (scalar)
 #
@@ -16,12 +15,9 @@
 library("dplyr")
 library("xgboost")
 
-OR_xgb = function(df, eta, trt){
+OR_xgb = function(df, trt, i){
   xdat = df
   N = length(xdat$age)
-  
-  #Determine the policy vector given the inputted eta's
-  A = ifelse(df$age < eta[1] & df$diam > eta[2] & df$grade > eta[3], 1, 0)
   
   # separating dataset into covariates and outcome (label)
   xdat = df[, c(trt, 8:ncol(df))]
@@ -57,11 +53,11 @@ OR_xgb = function(df, eta, trt){
   X1 = xgb.DMatrix(X1)
   
   # Make predictions with X0/X1 matrices
-  Q0 = predict(bst, X0, type = 'response') * (1-A)
-  Q1 = predict(bst, X1, type = 'response') * A
+  Q0 = predict(bst, X0, type = 'response') * (1-i)
+  Q1 = predict(bst, X1, type = 'response') * i
   
-  deltaXGB = sum(Q0 + Q1) / N
+  value = sum(Q0 + Q1) / N
   
-  return(deltaXGB)
+  return(value)
   
 }
