@@ -42,4 +42,5 @@ ipw = function(df, trt, i)
   # treatment effect
   value = mean((df$eventdeath * c.d) / pi.d)
   return(list(value=value, pi.d=pi.d, c.d=c.d))  
+  
 }
