@@ -1,5 +1,5 @@
 ########################################################################
-# Inverse Probability Weights (IPW)
+# Augmented Inverse Probability Weights (AIPW)
 # Compute value using the IPW estimator
 #
 # inputs:
@@ -13,33 +13,34 @@
 #
 # outputs:
 #   - value, a scalar
-#   - pi.d, a 272x1 vector
-#   - c.d, a 272x1 vector
+#   - ipw.value = the ipw value (as a QC)
+#   - adjustment = the adjustment that was made to the ipw
 #
 ########################################################################
 
-library(nnet)
-library(dplyr)
-
-ipw = function(df, trt, i)
+aipw = function(df, trt, i)
 {
   
-  # extract only the variables needed for fitting so we can tell it to use all vars  
-  x = df[, 8:ncol(df)]
-  y = df[, trt]
-  df_for_fit = as.data.frame(cbind(y, x))
+  # ipw estimate
+  ipw = ipw(df, eta, trt)
+  ipw.value = ipw$value
+  pi.d = ipw$pi.d
+  c.d = ipw$c.d
   
-  # fit the selected model
-  pi.h = glm(y ~ ., data=df_for_fit, family=binomial)
+  # or estimates - fitting with all vars selected by LASSO
+  df_for_fit = df[, c(2, 8:ncol(df))]
+  q.or = glm(eventdeath ~ ., data=df_for_fit, family=binomial)
   
-  # compute the fitted values (propensity scores)
-  pscores = predict(pi.h, type="response")
+  # predictions with new policy (replace original treatment with new)
+  data.policy = df
+  data.policy[, trt] = i
+  or.preds = predict(q.or, newdata=data.policy, type="response")
   
-  # compute pi.d, c.d
-  pi.d = (pscores * i) + ((1 - pscores) * (1 - i))
-  c.d = (df[, trt] * i) + ((1 - df[, trt]) * (1 - i))
+  # adjustment
+  adjustment = mean((c.d - pi.d) / (pi.d) * or.preds)
   
-  # treatment effect
-  value = mean((df$eventdeath * c.d) / pi.d)
-  return(list(value=value, pi.d=pi.d, c.d=c.d))  
+  # compile estimate
+  value = ipw.value - adjustment
+  return(list(value=value, ipw.value=ipw.value, adjustment=adjustment))
+  
 }
