@@ -41,7 +41,7 @@ variable_select = function(original_df)
   selected_vars = as.data.frame(x[, vars])
   
   # metadata
-  metadata = original_df[, 3:14]
+  metadata = original_df[, 3:16]
   
   # add an 8-level treatment factor
   #metadata$treatment = ifelse(metadata$chemo==0 & metadata$amputation==0, 1, 0)
