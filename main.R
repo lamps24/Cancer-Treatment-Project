@@ -23,4 +23,4 @@ df = variable_select(original_df)$newdata
 #   21 = Contig_23211_RC
 #   25 = NM_016359
 #   * note that the three imaging vars can change column indices based on seed - these are based on seed 1234
-test = gen_alg(df, trt=5, M=100, u=0.3, lam=3, gen=1, val_fun=ipw, var_list=c(9, 10, 12, 13))
+test = gen_alg(df, trt=7, M=100, u=0.3, lam=3, gen=1, val_fun=ipw, var_list=c(9, 10, 12, 13, 18, 21, 25))
