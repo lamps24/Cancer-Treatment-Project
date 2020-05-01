@@ -4,7 +4,7 @@ source("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/C
 source("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Code/aipw.R")
 source("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Code/or_logistic.R")
 source("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Code/or_xgb.R")
-source("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Code/policy_search.R")
+source("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Code/policy_search2.R")
 original_df = read.csv("C:/Users/lamps/Documents/Class/IE 5080 - Personalized Medicine/Project/Data/NKI_cleaned.csv")
 
 # set seed
