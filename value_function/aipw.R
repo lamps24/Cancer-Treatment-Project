@@ -22,7 +22,7 @@ aipw = function(df, trt, i)
 {
   
   # ipw estimate
-  ipw = ipw(df, eta, trt)
+  ipw = ipw(df, trt, i)
   ipw.value = ipw$value
   pi.d = ipw$pi.d
   c.d = ipw$c.d
