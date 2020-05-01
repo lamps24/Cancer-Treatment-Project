@@ -46,6 +46,11 @@ variable_select = function(original_df)
   # join metadata with selected vars
   newdata = cbind(metadata, selected_vars)
   
+  # make some metadata factors based on literature
+  newdata$grade = as.factor(newdata$grade)
+  newdata$angioinv = as.factor(newdata$angioinv)
+  newdata$lymphinfil = as.factor(newdata$lymphinfil)
+  
   return(list(newdata=newdata))
   
 }
