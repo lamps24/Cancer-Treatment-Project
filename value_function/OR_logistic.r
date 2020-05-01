@@ -22,20 +22,20 @@ OR_log = function(df, trt, i){
   N = nrow(newdat)
   
   # Q function if treatment is chemo 
-  # Currently there are a few different options of models for how to best include interactions with treatment
   if (trt == 5){
-    #mod = glm(eventdeath ~ .*chemo, data = newdat, family = "binomial")
-    #mod = glm(eventdeath ~ chemo + (histtype + grade + angioinv + lymphinfil + age + posnodes + diam)*chemo, data = newdat, family = "binomial")
-    mod = glm(eventdeath ~ chemo + (histtype + grade + angioinv + lymphinfil + age + posnodes + diam+NM_012067
-                                    + NM_021069 +NM_005132 +AL117638 + NM_006398+NM_004950 +NM_006461 +Contig23211_RC+NM_016109
-                                    +Contig42011_RC+NM_001085 +NM_001109+NM_002274)*chemo , data = newdat, family = 'binomial')
-    #mod = glm(eventdeath ~ chemo+(histtype + grade + angioinv + lymphinfil + age + posnodes + diam+ NM_001627+NM_012067+Contig21225_RC+NM_003430+NM_021069+NM_005132+AL117638+NM_006398+NM_004950+Contig23211_RC+NM_016359+L27560+NM_001109+M24895)*chemo, data = newdat, family = "binomial")
+    mod = glm(formula = eventdeath ~ chemo + age + diam + grade + lymphinfil + 
+                NM_000926 + NM_012067 + NM_003430 + Contig23211_RC + NM_016109 + 
+                NM_016359 + NM_001109, family = "binomial", data = newdat)
   }
   
   # Q function if treatment is amputation 
   if (trt ==7){
-    mod = glm(eventdeath ~ .*amputation, data = newdat, family = "binomial", control = list(maxit = 50)) # without control, says algorithm doesn't converge
-    #mod = glm(eventdeath ~ amputation + (histtype + grade + angioinv + lymphinfil + age + posnodes + diam+ NM_001627+NM_012067+Contig21225_RC+NM_003430+NM_021069+NM_005132+AL117638+NM_006398+NM_004950+Contig23211_RC+NM_016359+L27560+NM_001109+M24895+NM_002274)*amputation, data = newdat, family = "binomial")
+    mod = glm(formula = eventdeath ~ amputation + age + diam + posnodes + 
+                grade + lymphinfil + NM_000926 + NM_012067 + NM_003430 + 
+                NM_006096 + Contig23211_RC + AL049265 + NM_016359 + NM_001109 + 
+                NM_001333 + amputation:posnodes + amputation:lymphinfil + 
+                amputation:NM_012067 + amputation:NM_003430 + amputation:AL049265 + 
+                amputation:NM_001333, family = "binomial", data = newdat)
   }
 
   # Instantiate new matrices for each treatment
