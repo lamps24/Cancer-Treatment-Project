@@ -50,5 +50,5 @@ OR_log = function(df, trt, i){
 
   value = sum(Q0 + Q1) / N
   
-  return(value)
+  return(list(value=value))
 }
