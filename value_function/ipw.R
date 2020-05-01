@@ -30,7 +30,15 @@ ipw = function(df, trt, i)
   df_for_fit = as.data.frame(cbind(y, x))
   
   # fit the selected model
-  pi.h = glm(y ~ ., data=df_for_fit, family=binomial)
+  if (trt==5) {pi.h = glm(y ~ age + diam + grade + lymphinfil + NM_003430 + Contig23211_RC + NM_016359 +
+                            posnodes + angioinv + Contig55725_RC + NM_001124, 
+                            data=df_for_fit, family=binomial)}
+  if (trt==6) {pi.h = glm(y ~ age + diam + grade + lymphinfil + NM_003430 + Contig23211_RC + NM_016359 +
+                          posnodes + NM_012067 + AL117418,
+                        data=df_for_fit, family=binomial)}
+  if (trt==7) {pi.h = glm(y ~ age + diam + grade + lymphinfil + NM_003430 + Contig23211_RC + NM_016359 +
+                          posnodes + angioinv + Contig55725_RC + NM_001124, 
+                        data=df_for_fit, family=binomial)}
   
   # compute the fitted values (propensity scores)
   pscores = predict(pi.h, type="response")
@@ -42,5 +50,4 @@ ipw = function(df, trt, i)
   # treatment effect
   value = mean((df$eventdeath * c.d) / pi.d)
   return(list(value=value, pi.d=pi.d, c.d=c.d))  
-  
 }
