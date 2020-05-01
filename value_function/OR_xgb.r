@@ -37,7 +37,7 @@ OR_xgb = function(df, trt, i){
   watchlist = list(train = dtrain, eval = dtest)
   
   # create list of parameters, and begin training the model
-  param = list(max_depth = 2, eta = 1, verbose = 0, nthread = 2, objective = "binary:logistic", eval_metric = "auc")
+  param = list(max_depth = 2, eta = 1, verbose = 1, nthread = 2, objective = "binary:logistic", eval_metric = "auc")
   bst = xgb.train(param, dtrain, nrounds = 10, watchlist)
   
   # Create X0 matrix, where trt column is all 0's
@@ -58,6 +58,6 @@ OR_xgb = function(df, trt, i){
   
   value = sum(Q0 + Q1) / N
   
-  return(value)
+  return(list(value=value))
   
 }
