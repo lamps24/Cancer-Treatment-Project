@@ -45,25 +45,25 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
   Sigma = matrix(0, nrow=p, ncol=p)
   diag(Sigma) = 1
   
-  for (k in 1:gen){
+  eta = cbind(mvrnorm(M, mu, Sigma))
+  V = rep(0,M)
+  min_value = Inf
+  for (j in 1:M){
 
-    eta = cbind(mvrnorm(M, mu, Sigma))
-    V = rep(0,M)
-    min_value = Inf
-    for (j in 1:M){
-      
-      # convert eta values to policies - can adjust form of policy
-      i = ifelse(df[, var_list[1]] < eta[j, 1] & 
-                 df[, var_list[2]] > eta[j, 2] & 
-                 df[, var_list[3]] > eta[j, 3] &
-                 df[, var_list[4]] > eta[j, 4], 1, 0)
-      
-      V[j] = val_fun(df, trt, i)$value
-      if (V[j] < min_value){
-        min_value = V[j]
-        eta_best = eta[j,]
-      }
+    # convert eta values to policies - can adjust form of policy
+    i = ifelse(df[, var_list[1]] < eta[j, 1] & 
+               df[, var_list[2]] > eta[j, 2] & 
+               df[, var_list[3]] > eta[j, 3] &
+               df[, var_list[4]] > eta[j, 4], 1, 0)
+
+    V[j] = val_fun(df, trt, i)$value
+    if (V[j] < min_value){
+      min_value = V[j]
+      eta_best = eta[j,]
     }
+  }
+  
+  for (k in 1:gen){
     
     offspring = 1 + rpois(n = M, lambda = lam) # can change how to generate num offsprings
     L = sum(offspring)
