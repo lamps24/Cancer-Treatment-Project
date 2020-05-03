@@ -46,6 +46,9 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
   diag(Sigma) = 1
   Sigma[1, 1] = 15^2 # hard code age to vary more
   Sigma[2, 2] = 10^2 # hard code diam to vary more
+  Sigma[5, 5] = 0.75^2 
+  Sigma[6, 6] = 0.04^2 
+  Sigma[7, 7] = 0.75^2
   
   eta = cbind(mvrnorm(M, mu, Sigma))
   V = rep(0,M)
