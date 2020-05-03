@@ -60,7 +60,7 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
                df[, var_list[2]] > eta[j, 2] & 
                df[, var_list[3]] > eta[j, 3] &
                df[, var_list[4]] > eta[j, 4] &
-               df[, var_list[5]] > eta[j, 5] &
+               df[, var_list[5]] < eta[j, 5] &
                df[, var_list[6]] > eta[j, 6] &
                df[, var_list[7]] > eta[j, 7], 1, 0)
     
