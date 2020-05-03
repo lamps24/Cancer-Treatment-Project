@@ -32,7 +32,7 @@
 library(data.table)
 library(MASS)
 
-gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(9, 10, 12, 13, 18, 21, 25)) {
+gen_alg2 = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(9, 10, 12, 13, 18, 21, 25)) {
   
   # initialize values at means
   p = length(var_list)
@@ -57,12 +57,12 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
     
     # convert eta values to policies - can adjust form of policy
     i = ifelse(df[, var_list[1]] < eta[j, 1] & 
-               df[, var_list[2]] > eta[j, 2] & 
-               df[, var_list[3]] > eta[j, 3] &
-               df[, var_list[4]] > eta[j, 4] &
-               df[, var_list[5]] < eta[j, 5] &
-               df[, var_list[6]] > eta[j, 6] &
-               df[, var_list[7]] > eta[j, 7], 1, 0)
+                 df[, var_list[2]] > eta[j, 2] & 
+                 df[, var_list[3]] > eta[j, 3] &
+                 df[, var_list[4]] > eta[j, 4] &
+                 df[, var_list[5]] < eta[j, 5] &
+                 df[, var_list[6]] > eta[j, 6] &
+                 df[, var_list[7]] > eta[j, 7], 1, 0)
     
     V[j] = val_fun(df, trt, i)$value
     if (V[j] < min_value){
@@ -72,7 +72,7 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
   }
   
   for (k in 1:gen){
-
+    
     offspring = 1 + rpois(n = M, lambda = lam) # can change how to generate num offsprings
     L = sum(offspring)
     Z = matrix(rep(0, L*p), ncol = p)
@@ -89,12 +89,12 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
         
         # convert eta values to policies - can adjust form of policy
         i = ifelse(df[, var_list[1]] < eta[j, 1] & 
-                   df[, var_list[2]] > eta[j, 2] & 
-                   df[, var_list[3]] > eta[j, 3] &
-                   df[, var_list[4]] > eta[j, 4] &
-                   df[, var_list[5]] < eta[j, 5] &
-                   df[, var_list[6]] > eta[j, 6] &
-                   df[, var_list[7]] > eta[j, 7], 1, 0)
+                     df[, var_list[2]] > eta[j, 2] & 
+                     df[, var_list[3]] > eta[j, 3] &
+                     df[, var_list[4]] > eta[j, 4] &
+                     df[, var_list[5]] < eta[j, 5] &
+                     df[, var_list[6]] > eta[j, 6] &
+                     df[, var_list[7]] > eta[j, 7], 1, 0)
         
         Vtemp[l] = val_fun(df, trt, i)$value # can change which value search function 
         l = l + 1
@@ -110,5 +110,5 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
       eta_best = eta[1,]
     }
   }
-  return(c(min_value, eta_best))
+  return(list(min_value=min_value, eta_best=eta_best))
 }
