@@ -32,7 +32,7 @@
 library(data.table)
 library(MASS)
 
-gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(9, 10, 12, 13)) {
+gen_alg1 = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(9, 10, 12, 13)) {
   
   # initialize values at means
   p = length(var_list)
@@ -44,20 +44,18 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
   }
   Sigma = matrix(0, nrow=p, ncol=p)
   diag(Sigma) = 1
-  Sigma[1, 1] = 15^2 # hard code age to vary more
-  Sigma[2, 2] = 10^2 # hard code diam to vary more
   
   eta = cbind(mvrnorm(M, mu, Sigma))
   V = rep(0,M)
   min_value = Inf
   for (j in 1:M){
-
+    
     # convert eta values to policies - can adjust form of policy
     i = ifelse(df[, var_list[1]] < eta[j, 1] & 
-               df[, var_list[2]] > eta[j, 2] & 
-               df[, var_list[3]] > eta[j, 3] &
-               df[, var_list[4]] > eta[j, 4], 1, 0)
-
+                 df[, var_list[2]] > eta[j, 2] & 
+                 df[, var_list[3]] > eta[j, 3] &
+                 df[, var_list[4]] > eta[j, 4], 1, 0)
+    
     V[j] = val_fun(df, trt, i)$value
     if (V[j] < min_value){
       min_value = V[j]
@@ -83,9 +81,9 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
         
         # convert eta values to policies - can adjust form of policy
         i = ifelse(df[, var_list[1]] < eta[j, 1] & 
-                   df[, var_list[2]] > eta[j, 2] & 
-                   df[, var_list[3]] > eta[j, 3] &
-                   df[, var_list[4]] > eta[j, 4], 1, 0)
+                     df[, var_list[2]] > eta[j, 2] & 
+                     df[, var_list[3]] > eta[j, 3] &
+                     df[, var_list[4]] > eta[j, 4], 1, 0)
         
         Vtemp[l] = val_fun(df, trt, i)$value # can change which value search function 
         l = l + 1
@@ -101,5 +99,5 @@ gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list
       eta_best = eta[1,]
     }
   }
-  return(c(min_value, eta_best))
+  return(list(min_value=min_value, eta_best=eta_best))
 }
