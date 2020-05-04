@@ -32,7 +32,7 @@
 library(data.table)
 library(MASS)
 
-gen_alg3 = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(18, 21, 25)) {
+gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(18, 21, 25)) {
   
   # initialize values at means
   p = length(var_list)
@@ -58,47 +58,46 @@ gen_alg3 = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_lis
                  df[, var_list[2]] > eta[j, 2] & 
                  df[, var_list[3]] > eta[j, 3], 1, 0)
     
-    V[j] = val_fun(df, trt, i)$value
+    V[j] = OR_log(df, trt, i)$value
     if (V[j] < min_value){
       min_value = V[j]
       eta_best = eta[j,]
     }
   }
   
-  for (k in 1:gen){
-    
-    offspring = 1 + rpois(n = M, lambda = lam) # can change how to generate num offsprings
-    L = sum(offspring)
-    Z = matrix(rep(0, L*p), ncol = p)
-    Vtemp = matrix(rep(0, L), ncol = 1)
-    l = 1
-    for (r in 1:M) {
-      for(s in 1:offspring[r]) {
-        if (rnorm(1) < u & s>1) {
-          Z[l, ] = eta[r, ] + 20*rnorm(p) # can change how to mutate offspring
-        }
-        else {
-          Z[l, ] = eta[r, ]
-        }
-        
-        # convert eta values to policies - can adjust form of policy
-        i = ifelse(df[, var_list[1]] < eta[j, 1] & 
-                     df[, var_list[2]] > eta[j, 2] & 
-                     df[, var_list[3]] > eta[j, 3], 1, 0)
-        
-        Vtemp[l] = val_fun(df, trt, i)$value # can change which value search function 
-        l = l + 1
+  
+  offspring = 1 + rpois(n = M, lambda = lam) # can change how to generate num offsprings
+  L = sum(offspring)
+  Z = matrix(rep(0, L*p), ncol = p)
+  Vtemp = matrix(rep(0, L), ncol = 1)
+  l = 1
+  for (r in 1:M) {
+    for(s in 1:offspring[r]) {
+      if (rnorm(1) < u & s>1) {
+        Z[l, ] = eta[r, ] * 0.98 # changed from addition to multiplication (mutation rate = 0.98)
       }
-    }
-    tempvec = data.table(cbind(Vtemp, Z))
-    tempvec = tempvec[order(tempvec$V1, decreasing = TRUE)]
-    tempvec = tempvec[1:M]
-    V = as.matrix(tempvec[, 1])
-    eta = as.matrix(tempvec[, 2:p+1])
-    if (V[1] < min_value){
-      min_value = V[1]
-      eta_best = eta[1,]
+      else {
+        Z[l, ] = eta[r, ]
+      }
+      
+      # convert eta values to policies - can adjust form of policy
+      i = ifelse(df[, var_list[1]] < Z[l, 1] & 
+                   df[, var_list[2]] > Z[l, 2] & 
+                   df[, var_list[3]] > Z[l, 3], 1, 0)
+      
+      Vtemp[l] = OR_log(df, trt, i)$value # can change which value search function 
+      l = l + 1
     }
   }
-  return(list(min_value=min_value, eta_best=eta_best))
+  tempvec = data.table(cbind(Vtemp, Z))
+  tempvec = tempvec[order(tempvec$V1, decreasing = FALSE)] # want to sort by lowest values
+  tempvec = tempvec[1:M]
+  V = as.matrix(tempvec[, 1])
+  num_col = p + 1
+  eta = as.matrix(tempvec[, 2:num_col])
+  if (V[1] < min_value){
+    min_value = V[1]
+    eta_best = eta[1,]
+  }
+  return(c(min_value, eta_best))
 }
