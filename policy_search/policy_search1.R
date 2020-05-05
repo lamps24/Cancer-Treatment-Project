@@ -32,7 +32,7 @@
 library(data.table)
 library(MASS)
 
-gen_alg = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(9, 10, 12, 13)) {
+gen_alg1 = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_list=c(9, 10, 12, 13)) {
   
   # initialize values at means
   p = length(var_list)
