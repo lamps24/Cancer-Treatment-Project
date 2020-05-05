@@ -74,7 +74,7 @@ gen_alg1 = function(df, trt, M=100, u=0.3, lam=3, gen=1, val_fun=OR_log, var_lis
     for (r in 1:M) {
       for(s in 1:offspring[r]) {
         if (rnorm(1) < u & s>1) {
-          Z[l, ] = eta[r, ] * 0.98 # can change how to mutate offspring
+          Z[l, ] = eta[r, ] * runif(1, 0.95, 1.05) # can change how to mutate offspring
         }
         else {
           Z[l, ] = eta[r, ]
